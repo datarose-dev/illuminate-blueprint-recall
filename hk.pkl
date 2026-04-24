@@ -28,7 +28,7 @@ hooks {
           "composer.lock",
           "phpunit.xml"
         )
-        check = "composer test"
+        check = "COMPOSER_ALLOW_SUPERUSER=1 composer test"
         exclusive = true
       }
     }
@@ -50,7 +50,7 @@ hooks {
           "composer.lock",
           "phpunit.xml"
         )
-        check = "composer test"
+        check = "COMPOSER_ALLOW_SUPERUSER=1 composer test"
         exclusive = true
       }
     }
@@ -62,8 +62,8 @@ hooks {
     steps {
       ["rector"] = new Step {
         glob = phpFiles
-        fix = "composer rector"
-        check = "composer rector:dry"
+        fix = "COMPOSER_ALLOW_SUPERUSER=1 composer rector"
+        check = "COMPOSER_ALLOW_SUPERUSER=1 composer rector:dry"
         exclusive = true
       }
     }
