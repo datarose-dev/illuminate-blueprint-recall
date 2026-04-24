@@ -1,0 +1,71 @@
+amends "package://github.com/jdx/hk/releases/download/v1.43.0/hk@1.43.0#/Config.pkl"
+
+local phpFiles = List(
+  "src/**/*.php",
+  "tests/**/*.php",
+  "rector.php"
+)
+
+hooks {
+  ["pre-commit"] {
+    fix = true
+    stash = "git"
+    fail_on_fix = true
+
+    steps {
+      ["rector"] = new Step {
+        glob = phpFiles
+        fix = "COMPOSER_ALLOW_SUPERUSER=1 composer rector"
+        check = "COMPOSER_ALLOW_SUPERUSER=1 composer rector:dry"
+        exclusive = true
+      }
+
+      ["tests"] = new Step {
+        glob = List(
+          "src/**/*.php",
+          "tests/**/*.php",
+          "composer.json",
+          "composer.lock",
+          "phpunit.xml"
+        )
+        check = "composer test"
+        exclusive = true
+      }
+    }
+  }
+
+  ["check"] {
+    steps {
+      ["rector"] = new Step {
+        glob = phpFiles
+        check = "COMPOSER_ALLOW_SUPERUSER=1 composer rector:dry"
+        exclusive = true
+      }
+
+      ["tests"] = new Step {
+        glob = List(
+          "src/**/*.php",
+          "tests/**/*.php",
+          "composer.json",
+          "composer.lock",
+          "phpunit.xml"
+        )
+        check = "composer test"
+        exclusive = true
+      }
+    }
+  }
+
+  ["fix"] {
+    fix = true
+
+    steps {
+      ["rector"] = new Step {
+        glob = phpFiles
+        fix = "composer rector"
+        check = "composer rector:dry"
+        exclusive = true
+      }
+    }
+  }
+}
