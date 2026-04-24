@@ -1,5 +1,5 @@
 {
-  "name": "rozsazoltan/illuminate-blueprint-recall",
+  "name": "datarose/illuminate-blueprint-recall",
   "version": "1.0.0",
   "description": "A Blueprint macro for Laravel to restore column attribute persistence in migrations. Update only what you need. (Unofficial)",
   "keywords": [
@@ -9,7 +9,7 @@
     "preserve",
     "change"
   ],
-  "homepage": "https://github.com/rozsazoltan/illuminate-blueprint-recall",
+  "homepage": "https://github.com/datarose-net/illuminate-blueprint-recall",
   "license": "AGPL-3.0-only",
   "authors": [
     {
