@@ -27,7 +27,8 @@
     "php": "^8.5",
     "orchestra/pest-plugin-testbench": "^4.0",
     "orchestra/testbench": "^11.0",
-    "pestphp/pest": "^4.0"
+    "pestphp/pest": "^4.0",
+    "rector/rector": "^2.4"
   },
   "config": {
     "sort-packages": true,
@@ -63,6 +64,12 @@
     ],
     "test": [
       "./vendor/bin/pest"
+    ],
+    "rector": [
+      "./vendor/bin/rector process"
+    ],
+    "rector:dry": [
+      "./vendor/bin/rector process --dry-run"
     ]
   }
 }
