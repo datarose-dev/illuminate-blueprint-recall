@@ -17,11 +17,13 @@ class ColumnDefinitionBuilder
     private string $table;
     private string $column;
     private Collection $columns;
+    private Collection $indexes;
 
     public function __construct(private Blueprint $blueprint)
     {
         $this->table = $this->blueprint->getTable();
         $this->columns = collect(Schema::getColumns($this->table));
+        $this->indexes = collect(Schema::getIndexes($this->table));
     }
 
     public function get(string $column): ColumnDefinition
@@ -140,29 +142,35 @@ class ColumnDefinitionBuilder
      */
     private function applyColumnProperties(array $columnData): void
     {
-        $this->definition->autoIncrement($columnData['auto_increment']);
+        $this->definition->autoIncrement($columnData['auto_increment'] ?? false);
 
-        if ($columnData['unsigned']) {
+        $type = strtolower((string) ($columnData['type'] ?? ''));
+
+        if (($columnData['unsigned'] ?? false) || str_contains($type, 'unsigned')) {
             $this->definition->unsigned();
         }
 
-        if ($columnData['nullable']) {
+        if ($columnData['nullable'] ?? false) {
             $this->definition->nullable();
         }
 
-        if (! is_null($columnData['default'])) {
-            $default = $this->getColumnDefaultValue($columnData['type'], $columnData['default']);
+        if (array_key_exists('default', $columnData) && ! is_null($columnData['default'])) {
+            $default = $this->getColumnDefaultValue($columnData['type'] ?? 'string', $columnData['default']);
             $this->definition->default($default);
         }
 
-        if (! is_null($columnData['comment'])) {
+        if (! is_null($columnData['comment'] ?? null)) {
             $this->definition->comment($columnData['comment']);
+        }
+
+        if ($this->isUnique()) {
+            $this->definition->unique();
         }
     }
 
     private function getColumnDefaultValue(string $type, ?string $value)
     {
-        $type = strtolower($column['type'] ?? 'string');
+        $type = strtolower($type);
 
         if (is_null($value)) {
             throw new InvalidColumnDefaultValueException($this->column);
@@ -170,13 +178,27 @@ class ColumnDefinitionBuilder
 
         $default = trim($value, "'\"");
 
-        return match ($type) {
-            'int', 'integer', 'bigint', 'smallint', 'tinyint' => (int) $default,
-            'float', 'double', 'decimal' => (float) $default,
-            'boolean', 'bool' => filter_var($default, FILTER_VALIDATE_BOOLEAN),
-            'json' => json_decode($default, true) ?? '{}',
-            'binary', 'varbinary', 'blob' => base64_decode($default),
+        return match (true) {
+            str_contains($type, 'int') => (int) $default,
+            str_contains($type, 'float'),
+            str_contains($type, 'double'),
+            str_contains($type, 'decimal') => (float) $default,
+            str_contains($type, 'bool') => filter_var($default, FILTER_VALIDATE_BOOLEAN),
+            str_contains($type, 'json') => json_decode($default, true) ?? '{}',
+            str_contains($type, 'binary'),
+            str_contains($type, 'blob') => base64_decode($default),
             default => $default,
         };
+    }
+
+    private function isUnique(): bool
+    {
+        return $this->indexes->contains(function (array $index) {
+            $columns = $index['columns'] ?? [];
+
+            return ($index['unique'] ?? false)
+                && count($columns) === 1
+                && ($columns[0] ?? null) === $this->column;
+        });
     }
 }

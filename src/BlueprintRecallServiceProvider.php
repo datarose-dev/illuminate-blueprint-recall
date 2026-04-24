@@ -1,30 +1,24 @@
 <?php
 
-namespace Datarose\BlueprintPreserve;
+namespace Datarose\BlueprintRecall;
 
 use Datarose\BlueprintRecall\Column;
-use Datarose\BlueprintRecall\Exceptions\ColumnMacroAlreadyExistsException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 
 class BlueprintRecallServiceProvider extends ServiceProvider
 {
-    public function register()
+    public function register(): void
     {
         $this->registerBlueprintColumnMacro();
     }
 
-    private function registerBlueprintColumnMacro()
-    {
-        $this->ensureColumnMacroDoesNotExist();
-
-        Blueprint::macro('column', Column::class);
-    }
-
-    private function ensureColumnMacroDoesNotExist()
+    private function registerBlueprintColumnMacro(): void
     {
         if (Blueprint::hasMacro('column')) {
-            throw new ColumnMacroAlreadyExistsException();
+            return;
         }
+
+        Blueprint::macro('column', app(Column::class)());
     }
 }
