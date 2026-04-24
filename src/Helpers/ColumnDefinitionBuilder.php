@@ -14,12 +14,12 @@ use Str;
 class ColumnDefinitionBuilder
 {
     private ColumnDefinition $definition;
-    private string $table;
+    private readonly string $table;
     private string $column;
-    private Collection $columns;
-    private Collection $indexes;
+    private readonly Collection $columns;
+    private readonly Collection $indexes;
 
-    public function __construct(private Blueprint $blueprint)
+    public function __construct(private readonly Blueprint $blueprint)
     {
         $this->table = $this->blueprint->getTable();
         $this->columns = collect(Schema::getColumns($this->table));
@@ -108,7 +108,7 @@ class ColumnDefinitionBuilder
             ],
 
             Str::startsWith($type, 'enum') => [
-                'allowed' => explode(',', Str::of($type)->match('/\((.+)\)/')->replace("'", '')->__toString()),
+                'allowed' => explode(',', (string) Str::of($type)->match('/\((.+)\)/')->replace("'", '')->__toString()),
             ],
 
             Str::startsWith($type, 'geometry') ||
@@ -130,7 +130,7 @@ class ColumnDefinitionBuilder
             ],
 
             Str::startsWith($type, 'set') => [
-                'allowed' => explode(',', Str::of($type)->match('/\((.+)\)/')->replace("'", '')->__toString()),
+                'allowed' => explode(',', (string) Str::of($type)->match('/\((.+)\)/')->replace("'", '')->__toString()),
             ],
 
             default => [],
@@ -142,7 +142,7 @@ class ColumnDefinitionBuilder
      */
     private function applyColumnProperties(array $columnData): void
     {
-        $this->definition->autoIncrement($columnData['auto_increment'] ?? false);
+        $this->definition->autoIncrement();
 
         $type = strtolower((string) ($columnData['type'] ?? ''));
 
@@ -193,12 +193,6 @@ class ColumnDefinitionBuilder
 
     private function isUnique(): bool
     {
-        return $this->indexes->contains(function (array $index) {
-            $columns = $index['columns'] ?? [];
-
-            return ($index['unique'] ?? false)
-                && count($columns) === 1
-                && ($columns[0] ?? null) === $this->column;
-        });
+        return ColumnIndexInspector::isSingleColumnUnique($this->indexes, $this->column);
     }
 }

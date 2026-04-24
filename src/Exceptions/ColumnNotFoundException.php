@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Datarose\BlueprintRecall\Exceptions;
 
 use Exception;
@@ -12,9 +14,8 @@ class ColumnNotFoundException extends Exception
         parent::__construct($message);
     }
 
-    public function render()
+    public function render(): void
     {
         $this->getMessage();
-        return;
     }
 }

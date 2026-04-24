@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @method \Illuminate\Database\Schema\ColumnDefinition column(string $column) Set column properties for change
  */

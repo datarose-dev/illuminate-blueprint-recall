@@ -4,16 +4,16 @@ use Datarose\BlueprintRecall\Exceptions\ColumnNotFoundException;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-it('registers the column macro', function () {
+it('registers the column macro', function (): void {
     expect(Blueprint::hasMacro('column'))->toBeTrue();
 });
 
-it('makes an existing string column nullable without redefining the column type', function () {
-    Schema::create('users', function (Blueprint $table) {
+it('makes an existing string column nullable without redefining the column type', function (): void {
+    Schema::create('users', function (Blueprint $table): void {
         $table->string('name', 100)->nullable(false);
     });
 
-    Schema::table('users', function (Blueprint $table) {
+    Schema::table('users', function (Blueprint $table): void {
         $table->column('name')->nullable();
     });
 
@@ -23,12 +23,12 @@ it('makes an existing string column nullable without redefining the column type'
         ->and($column['nullable'])->toBeTrue();
 });
 
-it('removes nullable from an existing string column', function () {
-    Schema::create('users', function (Blueprint $table) {
+it('removes nullable from an existing string column', function (): void {
+    Schema::create('users', function (Blueprint $table): void {
         $table->string('name', 100)->nullable();
     });
 
-    Schema::table('users', function (Blueprint $table) {
+    Schema::table('users', function (Blueprint $table): void {
         $table->column('name')->nullable(false);
     });
 
@@ -38,12 +38,12 @@ it('removes nullable from an existing string column', function () {
         ->and($column['nullable'])->toBeFalse();
 });
 
-it('keeps the original string column type when changing nullable', function () {
-    Schema::create('users', function (Blueprint $table) {
+it('keeps the original string column type when changing nullable', function (): void {
+    Schema::create('users', function (Blueprint $table): void {
         $table->string('email', 191);
     });
 
-    Schema::table('users', function (Blueprint $table) {
+    Schema::table('users', function (Blueprint $table): void {
         $table->column('email')->nullable();
     });
 
@@ -54,12 +54,12 @@ it('keeps the original string column type when changing nullable', function () {
         ->and($column['nullable'])->toBeTrue();
 });
 
-it('preserves default values when changing nullable', function () {
-    Schema::create('settings', function (Blueprint $table) {
+it('preserves default values when changing nullable', function (): void {
+    Schema::create('settings', function (Blueprint $table): void {
         $table->string('status', 32)->default('active');
     });
 
-    Schema::table('settings', function (Blueprint $table) {
+    Schema::table('settings', function (Blueprint $table): void {
         $table->column('status')->nullable();
     });
 
@@ -70,12 +70,12 @@ it('preserves default values when changing nullable', function () {
         ->and($column['nullable'])->toBeTrue();
 });
 
-it('throws an exception when the column does not exist', function () {
-    Schema::create('users', function (Blueprint $table) {
+it('throws an exception when the column does not exist', function (): void {
+    Schema::create('users', function (Blueprint $table): void {
         $table->id();
     });
 
-    Schema::table('users', function (Blueprint $table) {
+    Schema::table('users', function (Blueprint $table): void {
         $table->column('missing_column')->nullable();
     });
 })->throws(ColumnNotFoundException::class);
