@@ -1,23 +1,56 @@
 <?php
 
-declare(strict_types=1);
-
 use Datarose\BlueprintRecall\Helpers\ColumnDefinitionBuilder;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
+
+function getTypeDetails(string $type): array
+{
+    $connection = DB::connection();
+
+    if (! $connection->getSchemaGrammar()) {
+        $connection->useDefaultSchemaGrammar();
+    }
+
+    $blueprint = new Blueprint($connection, 'temporary_table');
+    $builder = new ColumnDefinitionBuilder($blueprint);
+
+    return (new ReflectionClass($builder))
+        ->getMethod('getTypeDetails')
+        ->invoke($builder, $type);
+}
 
 it('parses varchar length correctly', function (): void {
-    Schema::create('users', function (Blueprint $table): void {
-        $table->string('email', 191);
-    });
+    expect(getTypeDetails('varchar(191)'))
+        ->toMatchArray([
+            'length' => 191,
+            'compressed' => false,
+        ]);
+});
 
-    Schema::table('users', function (Blueprint $table): void {
-        $builder = new ColumnDefinitionBuilder($table);
+it('parses compressed varchar correctly', function (): void {
+    expect(getTypeDetails('varchar(191) compressed'))
+        ->toMatchArray([
+            'length' => 191,
+            'compressed' => true,
+        ]);
+});
 
-        $result = (new ReflectionClass($builder))
-            ->getMethod('getTypeDetails')
-            ->invoke($builder, 'varchar(191)');
+it('parses decimal precision correctly', function (): void {
+    expect(getTypeDetails('decimal(10,2)'))
+        ->toMatchArray([
+            'total' => 10,
+            'places' => 2,
+        ]);
+});
 
-        expect($result['length'])->toBe(191);
-    });
+it('parses enum allowed values correctly', function (): void {
+    expect(getTypeDetails("enum('draft','published')"))
+        ->toMatchArray([
+            'allowed' => ['draft', 'published'],
+        ]);
+});
+
+it('returns an empty detail array for unsupported types', function (): void {
+    expect(getTypeDetails('text'))->toBe([]);
 });
