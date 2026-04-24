@@ -19,7 +19,11 @@ hooks {
         check = "COMPOSER_ALLOW_SUPERUSER=1 composer rector:dry"
         exclusive = true
       }
+    }
+  }
 
+  ["pre-push"] {
+    steps {
       ["tests"] = new Step {
         glob = List(
           "src/**/*.php",
