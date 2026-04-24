@@ -1,0 +1,4 @@
+[tools]
+hk = "latest"
+php = "8.5"
+pkl = "latest"
