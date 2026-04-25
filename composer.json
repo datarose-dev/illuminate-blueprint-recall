@@ -1,6 +1,5 @@
 {
   "name": "datarose/illuminate-blueprint-recall",
-  "version": "0.1.0",
   "description": "Blueprint macro for Laravel to restore column attribute persistence in migrations. Update only what you need. (Unofficial)",
   "keywords": [
     "laravel",
@@ -24,9 +23,9 @@
     "illuminate/contracts": "^11.0|^12.0|^13.0"
   },
   "require-dev": {
-    "orchestra/pest-plugin-testbench": "^4.0",
-    "orchestra/testbench": "^11.0",
-    "pestphp/pest": "^4.0",
+    "orchestra/pest-plugin-testbench": "^3.0|^4.0",
+    "orchestra/testbench": "^9.0|^10.0|^11.0",
+    "pestphp/pest": "^3.0|^4.0",
     "rector/rector": "^2.4"
   },
   "config": {
@@ -58,18 +57,12 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "scripts": {
-    "post-autoload-dump": [
+  "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump"
     ],
-    "test": [
-      "./vendor/bin/pest"
-    ],
-    "rector": [
-      "./vendor/bin/rector process"
-    ],
-    "rector:dry": [
-      "./vendor/bin/rector process --dry-run"
-    ]
+    "test": "./vendor/bin/pest",
+    "rector": "./vendor/bin/rector process",
+    "rector:dry": "./vendor/bin/rector process --dry-run"
   },
   "archive": {
     "exclude": [
