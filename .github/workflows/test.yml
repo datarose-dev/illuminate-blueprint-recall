@@ -83,7 +83,13 @@ jobs:
         run: composer update --no-interaction --prefer-dist --no-progress --with-all-dependencies
 
       - name: Show installed package versions
-        run: composer show laravel/framework illuminate/contracts orchestra/testbench orchestra/pest-plugin-testbench pestphp/pest phpunit/phpunit || true
+        run: |
+          composer show laravel/framework || true
+          composer show illuminate/contracts || true
+          composer show orchestra/testbench || true
+          composer show orchestra/pest-plugin-testbench || true
+          composer show pestphp/pest || true
+          composer show phpunit/phpunit || true
 
       - name: Run tests
         run: composer test

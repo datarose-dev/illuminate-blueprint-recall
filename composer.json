@@ -57,18 +57,12 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "scripts": {
-    "post-autoload-dump": [
+  "post-autoload-dump": [
       "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump"
     ],
-    "test": [
-      "./vendor/bin/pest"
-    ],
-    "rector": [
-      "./vendor/bin/rector process"
-    ],
-    "rector:dry": [
-      "./vendor/bin/rector process --dry-run"
-    ]
+    "test": "./vendor/bin/pest",
+    "rector": "./vendor/bin/rector process",
+    "rector:dry": "./vendor/bin/rector process --dry-run"
   },
   "archive": {
     "exclude": [
