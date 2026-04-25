@@ -31,7 +31,6 @@ Schema::table('users', function (Blueprint $table) {
 * [Limitations](#limitations)
 * [Testing](#testing)
 * [Contributing](#contributing)
-* [License & Acknowledgments](#license--acknowledgments)
 
 ## Why this exists
 
