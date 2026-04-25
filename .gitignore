@@ -5,7 +5,6 @@
 /.fleet
 /.idea
 /.phpunit.cache
-/phpunit.xml
 /.vscode
 /vendor
 composer.phar
