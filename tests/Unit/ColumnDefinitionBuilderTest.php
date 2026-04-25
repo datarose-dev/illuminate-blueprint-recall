@@ -1,8 +1,35 @@
 <?php
 
 use Datarose\BlueprintRecall\Helpers\ColumnDefinitionBuilder;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
+
+/**
+ * Laravel 11/12 use the legacy Blueprint constructor signature:
+ * new Blueprint(string $table, ?Closure $callback = null, string $prefix = '').
+ *
+ * Laravel 13+ requires the connection-aware signature:
+ * new Blueprint(Connection $connection, string $table, ?callable $callback = null).
+ *
+ * The branch above handles the new signature. This fallback is intentionally
+ * kept for older Laravel versions supported by the package.
+ */
+function makeBlueprint(string $table = 'temporary_table'): Blueprint
+{
+    $connection = DB::connection();
+
+    $firstType = (new ReflectionMethod(Blueprint::class, '__construct'))
+        ->getParameters()[0]
+        ->getType();
+
+    if ($firstType instanceof ReflectionNamedType && $firstType->getName() === Connection::class) {
+        return new Blueprint($connection, $table);
+    }
+
+    // phpcs:ignore
+    return new Blueprint($table);
+}
 
 function getTypeDetails(string $type): array
 {
@@ -12,7 +39,7 @@ function getTypeDetails(string $type): array
         $connection->useDefaultSchemaGrammar();
     }
 
-    $blueprint = new Blueprint($connection, 'temporary_table');
+    $blueprint = makeBlueprint('temporary_table');
     $builder = new ColumnDefinitionBuilder($blueprint);
 
     return (new ReflectionClass($builder))
