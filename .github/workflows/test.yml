@@ -4,30 +4,14 @@ on:
   pull_request:
     types:
       - synchronize
-    # types: [labeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  check-label:
-    runs-on: ubuntu-latest
-    outputs:
-      should-run: ${{ steps.check.outputs.should-run }}
-    steps:
-      - id: check
-        run: |
-          if [ "${{ github.event.label.name }}" = "needs-ci" ]; then
-            echo "should-run=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "should-run=false" >> "$GITHUB_OUTPUT"
-          fi
-
   test:
     name: PHP ${{ matrix.php }} / Laravel ${{ matrix.laravel }}
-    needs: check-label
-    if: needs.check-label.outputs.should-run == 'false'
     runs-on: ubuntu-latest
 
     strategy:
@@ -83,15 +67,6 @@ jobs:
 
       - name: Install dependencies
         run: composer update --no-interaction --prefer-dist --no-progress --with-all-dependencies
-
-      - name: Show installed package versions
-        run: |
-          composer show laravel/framework || true
-          composer show illuminate/contracts || true
-          composer show orchestra/testbench || true
-          composer show orchestra/pest-plugin-testbench || true
-          composer show pestphp/pest || true
-          composer show phpunit/phpunit || true
 
       - name: Run tests
         run: composer test
