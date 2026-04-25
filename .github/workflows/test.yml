@@ -92,4 +92,4 @@ jobs:
           composer show phpunit/phpunit || true
 
       - name: Run tests
-        run: ./vendor/bin/pest --do-not-cache-result
+        run: composer test
