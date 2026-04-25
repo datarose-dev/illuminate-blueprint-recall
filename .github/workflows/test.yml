@@ -6,6 +6,12 @@ on:
       - opened
       - synchronize
       - reopened
+    paths:
+      - 'src/**'
+      - 'tests/**'
+      - 'composer.json'
+      - 'phpunit.xml'
+      - '.github/workflows/test.yml'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
