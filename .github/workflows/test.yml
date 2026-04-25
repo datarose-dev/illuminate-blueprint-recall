@@ -2,7 +2,9 @@ name: Test PHP Package
 
 on:
   pull_request:
-    types: [labeled]
+    types:
+      - synchronize
+    # types: [labeled]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
