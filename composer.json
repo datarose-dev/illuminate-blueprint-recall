@@ -1,6 +1,5 @@
 {
   "name": "datarose/illuminate-blueprint-recall",
-  "version": "0.1.0",
   "description": "Blueprint macro for Laravel to restore column attribute persistence in migrations. Update only what you need. (Unofficial)",
   "keywords": [
     "laravel",
