@@ -93,5 +93,14 @@ jobs:
           composer show pestphp/pest || true
           composer show phpunit/phpunit || true
 
+      - name: Debug
+        run: |
+          php --version
+          pwd
+          ls -la
+          cat phpunit.xml
+          ./vendor/bin/pest --version
+          ./vendor/bin/phpunit --version
+
       - name: Run tests
         run: composer test
